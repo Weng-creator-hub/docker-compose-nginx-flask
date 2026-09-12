@@ -1,0 +1,35 @@
+services:
+    backend:
+     build:
+      context: .
+     image: my-api:latest
+     restart: unless-stopped
+     healthcheck:
+      test: 
+        - CMD
+        - python
+        - -c
+        - "import urllib.request;urllib.request.urlopen('http://127.0.0.1:8080/health')"
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+     networks:
+        - app_net  
+
+    nginx:
+     image: nginx:latest
+     restart: unless-stopped
+     depends_on :
+       backend:
+         condition: service_healthy
+     ports:
+       - "${WEB_PORT:-8080}:80"
+     volumes:
+       - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+     networks:
+       - app_net
+
+networks:
+  app_net:
+    driver: bridge
