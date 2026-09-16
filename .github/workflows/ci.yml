@@ -11,6 +11,7 @@ on:
 
 permissions:
   contents: read
+  packages: write
 
 jobs:
   compose-test:
@@ -42,6 +43,19 @@ jobs:
           echo "Application did not become healthy in time"
           exit 1
 
+       - name: Publish tested backend image
+         if: success() && github.event_name == 'push' && github.ref == 'refs/heads/main'
+         env:
+           GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+         run: |
+           image_ref="ghcr.io/weng-creator-hub/docker-compose-nginx-flask:sha-${GITHUB_SHA}"
+          
+           printf '%s' "$GHCR_TOKEN" |
+             docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
+
+           docker tag my-api:latest "$image_ref"
+           docker push "$image_ref"     - name: Show container status
+        
       - name: Show container status
         if: always()
         run: docker compose ps
