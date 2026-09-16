@@ -30,7 +30,7 @@ jobs:
       - name: Wait for application health
         run: |
           for attempt in {1..30}; do
-            if curl --fail --silent --show-error \
+            if curl --fail --silent --show-error --max-time 5 \
               http://127.0.0.1:8080/health; then
               exit 0
             fi
@@ -39,17 +39,17 @@ jobs:
             sleep 2
           done
 
-            echo "Application did not become healthy in time"
-            exit 1
+          echo "Application did not become healthy in time"
+          exit 1
 
-        - name: Show container status
+      - name: Show container status
         if: always()
         run: docker compose ps
 
-        - name: Show service logs on failure
+      - name: Show service logs on failure
         if: failure()
         run: docker compose logs --no-color
 
-        - name: Stop services
+      - name: Stop services
         if: always()
         run: docker compose down --volumes --remove-orphans
