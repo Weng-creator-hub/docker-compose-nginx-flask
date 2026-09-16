@@ -16,30 +16,30 @@ jobs:
   compose-test:
     runs-on: ubuntu-latest
 
-steps:
-  - name: Checkout repository
-    uses: actions/checkout@v7
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
 
-  - name: Validate Compose configuration
-    run: docker compose config >/dev/null
+      - name: Validate Compose configuration
+        run: docker compose config >/dev/null
 
-  - name: Build and start services
-    run: docker compose up -d --build
+      - name: Build and start services
+        run: docker compose up -d --build
 
-  - name: Wait for application health
-    run: |
-      for attempt in {1..30}; do
-        if curl --fail --silent --show-error \
-          http://127.0.0.1:8080/health; then
-          exit 0
-        fi
+      - name: Wait for application health
+        run: |
+              for attempt in {1..30}; do
+               if curl --fail --silent --show-error \
+                  http://127.0.0.1:8080/health; then
+                  exit 0
+               fi
 
-        echo "Waiting for application: ${attempt}/30"
-        sleep 2
-      done
+              echo "Waiting for application: ${attempt}/30"
+              sleep 2
+              done
 
-        echo "Application did not become healthy in time"
-        exit 1
+              echo "Application did not become healthy in time"
+              exit 1
 
   - name: Show container status
     if: always()
