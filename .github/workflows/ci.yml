@@ -41,14 +41,14 @@ jobs:
               echo "Application did not become healthy in time"
               exit 1
 
-  - name: Show container status
-    if: always()
-    run: docker compose ps
+      - name: Show container status
+      if: always()
+      run: docker compose ps
 
-  - name: Show service logs on failure
-    if: failure()
-    run: docker compose logs --no-color
+      - name: Show service logs on failure
+      if: failure()
+      run: docker compose logs --no-color
 
-  - name: Stop services
-    if: always()
-    run: docker compose down --volumes --remove-orphans
+      - name: Stop services
+      if: always()
+      run: docker compose down --volumes --remove-orphans
