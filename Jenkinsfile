@@ -19,22 +19,19 @@ pipeline {
             }
         }
 
-        stage('测试健康接口') {
-            steps {
-                sh '''
-                    docker run --rm -i --entrypoint python "$IMAGE_NAME" - < ci/smoke_test.py
-                '''
-            }
-        }
-
-
-
-
         stage('构建镜像') {
             steps {
                 sh '''
                     docker build -t "$IMAGE_NAME" --label "org.opencontainers.image.revision=$(git rev-parse HEAD)" .
                     docker image inspect "$IMAGE_NAME" --format '{{.Id}}'
+                '''
+            }
+        }
+
+        stage('测试健康接口') {
+            steps {
+                sh '''
+                    docker run --rm -i --entrypoint python "$IMAGE_NAME" - < ci/smoke_test.py
                 '''
             }
         }
