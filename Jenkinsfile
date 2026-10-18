@@ -19,6 +19,17 @@ pipeline {
             }
         }
 
+        stage('测试健康接口') {
+            steps {
+                sh '''
+                    docker run --rm -i --entrypoint python "$IMAGE_NAME" - < ci/smoke_test.py
+                '''
+            }
+        }
+
+
+
+
         stage('构建镜像') {
             steps {
                 sh '''
